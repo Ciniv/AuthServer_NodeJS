@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model RefreshJWT {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  userEmail   User      @relation("JWT", fields: [email], references: [email])
+  email       String    @unique
+  jwt         String    @unique
+}
+
+model User {
+  id          Int             @id @default(autoincrement())
+  name        String          @db.VarChar(100)
+  email       String          @unique
+  password    String
+  role        Role            @default(USER)
+  jwt         RefreshJWT[]    @relation("JWT")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
